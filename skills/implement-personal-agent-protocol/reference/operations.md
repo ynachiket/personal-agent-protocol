@@ -13,7 +13,7 @@ This guarantees two things:
 - **Approval covers the exact terms.** The User approves one revision of the terms, and the Company performs only what that revision describes.
 - **At most once.** A retry with the same approval never performs the action twice (7).
 
-This page defines version 2 of the `operations` extension. It uses the terms, Sessions, and tokens in the [specification](https://personalagentprotocol.org/docs/0.4/spec), and its examples continue the specification's jacket exchange. Operations add no endpoints. A Company chooses which actions need approval.
+This page defines version 2 of the `operations` extension. It uses the terms, Sessions, and tokens in the [specification](https://personalagentprotocol.org/docs/0.4/spec), and its examples continue the specification's jacket exchange. Operations add no endpoints. A Company chooses which actions need approval. Placing an order through UCP checkout isn't an operation: UCP's checkout carries its own approval ([UCP extension 6](https://personalagentprotocol.org/docs/0.4/extensions/ucp#commerce)).
 
 ## 2. Advertising support
 

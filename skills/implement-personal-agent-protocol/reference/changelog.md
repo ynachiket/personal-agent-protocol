@@ -52,6 +52,12 @@ A Company whose website treats `poppy:browser-sign-in` as the account's full acc
 
 A Company sets `web.disabled` to ask Personal Agents to use only its Company Agent and APIs. A Personal Agent should not browse its website. A Company that sets it lists no `browser_session_endpoint`, and lists `agent` or `apis`. The protocol can't enforce it, so it isn't a promise that Personal Agents won't browse.
 
+#### Merchant of Record and payment processor in UCP checkout
+
+[UCP 6](https://personalagentprotocol.org/docs/0.4/extensions/ucp#commerce) · [Issue #68](https://github.com/personal-agent-protocol/personal-agent-protocol/issues/68)
+
+A Company that sells as Merchant of Record SHOULD say so in the UCP checkout, and SHOULD name the payment service provider that processes the payment, in the checkout's own fields where UCP defines them and otherwise in a UCP message. Named in a conversation before checkout, they go in a disclosure. The Personal Agent MUST show them to the User before Complete Checkout, as content from the Company.
+
 ### Minor changes
 
 #### When and how the User approved
@@ -65,6 +71,12 @@ An approval can say when the User approved, in `approved_at`, and how they gave 
 [Spec 4.5](https://personalagentprotocol.org/docs/0.4/spec#access-tokens)
 
 A Personal Agent uses each DPoP key for one User ID only, as it does each delegated key (5.2), so Companies can't link a User by the key's thumbprint. Version 0.2 had this rule, and 0.3 removed it with the other rules Poppy added to RFC 9449.
+
+#### Checkout authorization and placing orders
+
+[UCP 6](https://personalagentprotocol.org/docs/0.4/extensions/ucp#commerce) · [Operations 1](https://personalagentprotocol.org/docs/0.4/extensions/operations#intro) · [Issue #68](https://github.com/personal-agent-protocol/personal-agent-protocol/issues/68)
+
+The UCP extension says that the Session header authorizes no checkout: a signed-out checkout follows the Company's UCP access policy, and a signed-in one needs an access token with the scopes the Company's UCP profile requires, obtained by sign-in or incremental authorization. Placing an order is Complete Checkout, covered by UCP's checkout approval rather than the Operations extension, which remains for the Company's other actions.
 
 ### Guides
 

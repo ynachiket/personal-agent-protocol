@@ -88,6 +88,16 @@ a promise that Personal Agents won't browse.
 
 </Change>
 
+<Change title="Merchant of Record and payment processor in UCP checkout" sections="UCP 6" issue="68">
+
+A Company that sells as Merchant of Record SHOULD say so in the UCP checkout, and SHOULD name the
+payment service provider that processes the payment, in the checkout's own fields where UCP defines
+them and otherwise in a UCP message. Named in a conversation before checkout, they go in a
+disclosure. The Personal Agent MUST show them to the User before Complete Checkout, as content from
+the Company.
+
+</Change>
+
 ### Minor changes {#v0-4-minor}
 
 <Change title="When and how the User approved" sections="Operations 6, Operations 8.1">
@@ -105,6 +115,16 @@ device.
 A Personal Agent uses each DPoP key for one User ID only, as it does each delegated key (5.2), so
 Companies can't link a User by the key's thumbprint. Version 0.2 had this rule, and 0.3 removed it
 with the other rules Poppy added to RFC 9449.
+
+</Change>
+
+<Change title="Checkout authorization and placing orders" sections="UCP 6, Operations 1" issue="68">
+
+The UCP extension says that the Session header authorizes no checkout: a signed-out checkout follows
+the Company's UCP access policy, and a signed-in one needs an access token with the scopes the
+Company's UCP profile requires, obtained by sign-in or incremental authorization. Placing an order
+is Complete Checkout, covered by UCP's checkout approval rather than the Operations extension, which
+remains for the Company's other actions.
 
 </Change>
 
