@@ -138,10 +138,49 @@ Carts, checkouts, orders, catalog search, and payment are defined by UCP, with t
 
 - **Payment.** Payment is part of UCP checkout: the Company's UCP profile advertises the payment handlers it accepts, the Personal Agent's platform profile says which it supports, and the checkout carries the instrument. For a Company that advertises this extension, UCP is its payment mechanism, and a Personal Agent that supports the extension pays through it.
 - **Authorizing checkout.** The Session header authenticates the Personal Agent and the User ID (4); it authorizes no checkout or payment, and this protocol defines no scope that does. A checkout is authorized as any other UCP request (4): signed out, by the Company's UCP access policy, which decides whether it offers guest checkout; signed in, by an access token from the Company's issuer with the scopes the Company's UCP profile requires for it, such as `dev.ucp.shopping.checkout:manage`. A Personal Agent gets those scopes the way it gets any other, by signing in or by incremental authorization after `insufficient_scope` (4), not by a separate authorization for checkout.
-- **Merchant of Record and payment processor.** A Company that sells as Merchant of Record SHOULD say so in the checkout, and SHOULD name the payment service provider that processes the payment, so the claim travels with the terms the User approves. It uses the checkout's own fields where the negotiated UCP version or a UCP extension defines them, and otherwise a UCP message in the checkout. A payment handler says how the instrument is tokenized and need not say who processes the payment. Where the Company names the Merchant of Record or the payment service provider in a conversation before checkout starts, it SHOULD put that in a [disclosure](https://personalagentprotocol.org/docs/0.4/extensions/disclosures), apart from the message's other text. When the checkout names either, the Personal Agent MUST show it to the User in its trusted interface before Complete Checkout. The claim is content from the Company ([spec 10.1](https://personalagentprotocol.org/docs/0.4/spec#untrusted-content)): the Personal Agent shows it as the Company's statement and doesn't act on it.
+- **Merchant of Record and payment processor.** UCP's checkout assumes that the business remains the Merchant of Record ([UCP: checkout](https://ucp.dev/latest/specification/shopping/checkout/)), but no checkout field says which legal entity that is or which payment service provider processes the payment. A payment handler's `config` can identify the merchant to the handler, for tokenizing the instrument, not to the User ([UCP: payment handler guide](https://ucp.dev/2026-08-25/specification/payment/guide/)). When the seller isn't the name the User sees, such as a hotel sold by its operating company through a central reservation system, or a brand whose payments a provider routes, the User can't tell from the checkout whom they are buying from or who will charge them. A Company SHOULD name both in the checkout, so they travel with the terms the User approves: in the checkout's own fields where the negotiated UCP version or a UCP extension defines them, and otherwise in UCP warning messages with `presentation` `disclosure`, one with the `code` `merchant_of_record` and one with the `code` `payment_processor` (example below). In a conversation before checkout starts, it SHOULD put them in a [disclosure](https://personalagentprotocol.org/docs/0.4/extensions/disclosures), apart from the message's other text. When the checkout names either, the Personal Agent MUST show it to the User in its trusted interface before Complete Checkout, following UCP's rendering contract for disclosures, which includes handing the User the `continue_url` when it can't honor that contract (7). The claim is content from the Company ([spec 10.1](https://personalagentprotocol.org/docs/0.4/spec#untrusted-content)): the Personal Agent shows it as the Company's statement and doesn't act on it.
 - **Approval.** UCP's checkout carries its own approval. The checkout resource is the terms; UCP's messages say when the User's review is required and when a step must finish on the Company's page (7); the User reviews and approves the checkout in a trusted interface, as UCP requires; and Complete Checkout is the call the Personal Agent makes once the User has committed. That is the one approval for a purchase, so a Company SHOULD NOT also return an [operation](https://personalagentprotocol.org/docs/0.4/extensions/operations) for a UCP capability's operation, unless a UCP extension the two have negotiated defines how an operation rides in a UCP response; two approval records for one action can disagree. A Personal Agent that receives one outside such an extension treats it as content ([spec 10.1](https://personalagentprotocol.org/docs/0.4/spec#untrusted-content)) and approves nothing.
 - **Placing an order.** At a Company that advertises this extension, placing an order is Complete Checkout, and UCP's checkout approval covers it; the Operations extension doesn't. Operations remain for actions with a business effect at the Company's other APIs that no negotiated UCP capability defines, such as changing a booking or cancelling a subscription.
 - **Retries.** UCP's idempotency keys and checkout lifecycle give a retried completion the first result. The Operations extension's retry rules apply to the Company's other APIs.
+
+A hotel brand's checkout, ready for the User's review. Its operating company sells the stay, and a payment service provider processes the payment. Fields this example doesn't use are elided with `…`:
+
+*Excerpt from a checkout: Company → Personal Agent*
+
+```
+{
+  "ucp": { "version": "2026-08-25", "status": "success", "payment_handlers": { "…": "…" } },
+  "id": "chk_7Hq2",
+  "status": "ready_for_complete",
+  "currency": "EUR",
+  "line_items": [
+    {
+      "id": "li_1",
+      "item": { "id": "room_dbl_lake", "title": "Hotel Seeblick, Double Room, Lake View", "price": 18900 },
+      "quantity": 2,
+      "totals": [{ "type": "total", "amount": 37800 }]
+    }
+  ],
+  "totals": [{ "type": "total", "amount": 37800 }],
+  "messages": [
+    {
+      "type": "warning",
+      "code": "merchant_of_record",
+      "content": "Sold by Seeblick Hotelbetriebs GmbH, Innsbruck, Austria, the Merchant of Record for this booking.",
+      "presentation": "disclosure"
+    },
+    {
+      "type": "warning",
+      "code": "payment_processor",
+      "content": "Payment processed by Alpenpay Payments B.V. Your statement will show SEEBLICK HOTELS.",
+      "presentation": "disclosure"
+    }
+  ],
+  "links": []
+}
+```
+
+The messages have no `path`, so they apply to the whole checkout. The Personal Agent shows both with the rest of the terms, and calls Complete Checkout only once the User has committed to them.
 
 ## 7. Escalation to the User, and web browsing
 

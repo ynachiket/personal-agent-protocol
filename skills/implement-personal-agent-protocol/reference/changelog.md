@@ -56,7 +56,7 @@ A Company sets `web.disabled` to ask Personal Agents to use only its Company Age
 
 [UCP 6](https://personalagentprotocol.org/docs/0.4/extensions/ucp#commerce) · [Issue #68](https://github.com/personal-agent-protocol/personal-agent-protocol/issues/68)
 
-A Company that sells as Merchant of Record SHOULD say so in the UCP checkout, and SHOULD name the payment service provider that processes the payment, in the checkout's own fields where UCP defines them and otherwise in a UCP message. Named in a conversation before checkout, they go in a disclosure. The Personal Agent MUST show them to the User before Complete Checkout, as content from the Company.
+UCP assumes the business is the Merchant of Record, but its checkout has no field for which legal entity that is or which payment service provider processes the payment. A Company SHOULD name both in the checkout: in the checkout's own fields once UCP defines them, and until then in UCP warning messages with `presentation` `disclosure` and the `code` `merchant_of_record` or `payment_processor`. Named in a conversation before checkout, they go in a disclosure. The Personal Agent MUST show them to the User before Complete Checkout, as content from the Company. Section 6 has an example.
 
 ### Minor changes
 
